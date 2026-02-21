@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "my-food-app",
-    "slug": "my-food-app",
+    "name": "foodindex",
+    "slug": "foodindex",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
