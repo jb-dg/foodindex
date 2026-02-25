@@ -1,34 +1,44 @@
-import { ViewStyle, StyleSheet, Image, View } from "react-native";
+import { ViewStyle, StyleSheet, Image, View, Pressable } from "react-native";
 import { ThemedText } from "../ThemedText";
 import { Card } from "@/components/Card";
 import { useThemeColors } from "@/hooks/useThemeColors";
+import { Link } from "expo-router";
 
 type PropsProductCard = {
   style?: ViewStyle;
   id: number;
   name: string;
+  imagePath: string;
 };
 
-export function ProductCard({ style, id, name }: PropsProductCard) {
+export function ProductCard({ style, id, name, imagePath }: PropsProductCard) {
   const colors = useThemeColors();
+  const imageSource = imagePath
+    ? { uri: imagePath }
+    : require("@/assets/images/pomme.png");
 
   return (
-    <Card style={[style, stylesSubCard.container]}>
-      <View
-        style={[
-          stylesSubCard.shadow,
-          { backgroundColor: colors.grayBackground },
-        ]}
-      ></View>
-      <ThemedText style={stylesSubCard.id} variant="caption" color="grayMedium">
-        #{id.toString().padStart(3, "0")}
-      </ThemedText>
-      <Image
-        style={stylesSubCard.img}
-        source={require("@/assets/images/pomme.png")}
-      />
-      <ThemedText>{name}</ThemedText>
-    </Card>
+    <Link href={{ pathname: "/product/[id]", params: { id: id } }} asChild>
+      <Pressable style={style}>
+        <Card style={[stylesSubCard.container]}>
+          <View
+            style={[
+              stylesSubCard.shadow,
+              { backgroundColor: colors.grayBackground },
+            ]}
+          ></View>
+          <ThemedText
+            style={stylesSubCard.id}
+            variant="caption"
+            color="grayMedium"
+          >
+            #{id.toString()}
+          </ThemedText>
+          <Image style={stylesSubCard.img} source={imageSource} />
+          {/* <ThemedText>{name}</ThemedText> */}
+        </Card>
+      </Pressable>
+    </Link>
   );
 }
 
@@ -38,8 +48,9 @@ const stylesSubCard = StyleSheet.create({
     padding: 4,
   },
   img: {
-    width: 72,
-    height: 72,
+    width: 100,
+    height: 100,
+    resizeMode: "contain",
   },
   id: {
     alignSelf: "flex-end",
