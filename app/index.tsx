@@ -12,6 +12,9 @@ import { useThemeColors } from "@/hooks/useThemeColors";
 import { Card } from "@/components/Card";
 import { ProductCard } from "@/components/product/ProductCard";
 import { useInfiniteFetchQuery } from "@/hooks/useFetchQuery";
+import { SearchBar } from "@/components/SearchBar";
+import { useState } from "react";
+import { Row } from "@/components/Row";
 
 export default function Index() {
   const colors = useThemeColors();
@@ -29,9 +32,12 @@ export default function Index() {
 
   const isInitialLoading = isFetching && itemListRender.length === 0;
 
+  const [search, setSearch] = useState("");
+
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.tint }]}>
-      <View style={styles.header}>
+      {/* header */}
+      <Row style={styles.header} gap={16}>
         <Image
           style={styles.tinyLogo}
           source={require("@/assets/images/pomme-w.png")}
@@ -39,7 +45,12 @@ export default function Index() {
         <ThemedText variant="headline" color="grayLight">
           My Food App
         </ThemedText>
+      </Row>
+      {/* search bar */}
+      <View>
+        <SearchBar value={search} onChange={setSearch} />
       </View>
+      {/* body list des produits sous formes de card */}
       <Card style={styles.body}>
         <FlatList
           data={itemListRender}
@@ -88,9 +99,6 @@ const styles = StyleSheet.create({
     padding: 4,
   },
   header: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 16,
     padding: 12,
   },
   body: {
