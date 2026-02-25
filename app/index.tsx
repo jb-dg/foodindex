@@ -1,17 +1,30 @@
-import { StyleSheet, Image, View, FlatList, Text } from "react-native";
+import {
+  StyleSheet,
+  Image,
+  View,
+  FlatList,
+  Text,
+  ActivityIndicator,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ThemedText } from "@/components/ThemedText";
 import { useThemeColors } from "@/hooks/useThemeColors";
 import { Card } from "@/components/Card";
 import { ProductCard } from "@/components/product/ProductCard";
+import { useFetchQuery } from "@/hooks/useFetchQuery";
 
 export default function Index() {
   const colors = useThemeColors();
 
-  const PRODUCTS_LIST = Array.from({ length: 35 }, (_, k) => ({
-    name: "Product name",
-    id: k + 1,
-  }));
+  const { data, isFetching } = useFetchQuery(
+    "/search?countries_tags=en:france&page_size=21",
+  );
+  const PRODUCTS_LIST = data?.products ?? [];
+
+  // const PRODUCTS_LIST = Array.from({ length: 35 }, (_, k) => ({
+  //   name: "Product name",
+  //   id: k + 1,
+  // }));
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.tint }]}>
@@ -29,15 +42,19 @@ export default function Index() {
           data={PRODUCTS_LIST}
           renderItem={({ item }) => (
             <ProductCard
-              style={{ flex: 1 / 3 }}
-              id={item.id}
-              name={item.name}
+              style={{ flex: 1 / 2 }}
+              id={item.code}
+              name={item.abbreviated_product_name}
+              imagePath={item.image_front_url}
             ></ProductCard>
           )}
-          keyExtractor={(item) => item.id.toString()}
-          numColumns={3}
+          keyExtractor={(item) => item.code.toString()}
+          numColumns={2}
           contentContainerStyle={[styles.gridGap, styles.list]}
           columnWrapperStyle={styles.gridGap}
+          ListFooterComponent={
+            isFetching ? <ActivityIndicator color={colors.tint} /> : null
+          }
         ></FlatList>
       </Card>
     </SafeAreaView>

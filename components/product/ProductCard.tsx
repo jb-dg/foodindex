@@ -7,10 +7,14 @@ type PropsProductCard = {
   style?: ViewStyle;
   id: number;
   name: string;
+  imagePath: string;
 };
 
-export function ProductCard({ style, id, name }: PropsProductCard) {
+export function ProductCard({ style, id, name, imagePath }: PropsProductCard) {
   const colors = useThemeColors();
+  const imageSource = imagePath
+    ? { uri: imagePath }
+    : require("@/assets/images/pomme.png");
 
   return (
     <Card style={[style, stylesSubCard.container]}>
@@ -23,10 +27,7 @@ export function ProductCard({ style, id, name }: PropsProductCard) {
       <ThemedText style={stylesSubCard.id} variant="caption" color="grayMedium">
         #{id.toString().padStart(3, "0")}
       </ThemedText>
-      <Image
-        style={stylesSubCard.img}
-        source={require("@/assets/images/pomme.png")}
-      />
+      <Image style={stylesSubCard.img} source={imageSource} />
       <ThemedText>{name}</ThemedText>
     </Card>
   );
@@ -38,8 +39,9 @@ const stylesSubCard = StyleSheet.create({
     padding: 4,
   },
   img: {
-    width: 72,
-    height: 72,
+    width: 100,
+    height: 100,
+    resizeMode: "contain",
   },
   id: {
     alignSelf: "flex-end",
