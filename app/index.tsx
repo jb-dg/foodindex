@@ -29,11 +29,6 @@ export default function Index() {
 
   const isInitialLoading = isFetching && itemListRender.length === 0;
 
-  // const PRODUCTS_LIST = Array.from({ length: 35 }, (_, k) => ({
-  //   name: "Product name",
-  //   id: k + 1,
-  // }));
-
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.tint }]}>
       <View style={styles.header}>

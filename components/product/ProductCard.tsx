@@ -1,7 +1,8 @@
-import { ViewStyle, StyleSheet, Image, View } from "react-native";
+import { ViewStyle, StyleSheet, Image, View, Pressable } from "react-native";
 import { ThemedText } from "../ThemedText";
 import { Card } from "@/components/Card";
 import { useThemeColors } from "@/hooks/useThemeColors";
+import { Link } from "expo-router";
 
 type PropsProductCard = {
   style?: ViewStyle;
@@ -17,19 +18,27 @@ export function ProductCard({ style, id, name, imagePath }: PropsProductCard) {
     : require("@/assets/images/pomme.png");
 
   return (
-    <Card style={[style, stylesSubCard.container]}>
-      <View
-        style={[
-          stylesSubCard.shadow,
-          { backgroundColor: colors.grayBackground },
-        ]}
-      ></View>
-      <ThemedText style={stylesSubCard.id} variant="caption" color="grayMedium">
-        #{id.toString().padStart(3, "0")}
-      </ThemedText>
-      <Image style={stylesSubCard.img} source={imageSource} />
-      <ThemedText>{name}</ThemedText>
-    </Card>
+    <Link href={{ pathname: "/product/[id]", params: { id: id } }} asChild>
+      <Pressable style={style}>
+        <Card style={[stylesSubCard.container]}>
+          <View
+            style={[
+              stylesSubCard.shadow,
+              { backgroundColor: colors.grayBackground },
+            ]}
+          ></View>
+          <ThemedText
+            style={stylesSubCard.id}
+            variant="caption"
+            color="grayMedium"
+          >
+            #{id.toString()}
+          </ThemedText>
+          <Image style={stylesSubCard.img} source={imageSource} />
+          {/* <ThemedText>{name}</ThemedText> */}
+        </Card>
+      </Pressable>
+    </Link>
   );
 }
 
