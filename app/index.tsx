@@ -1,11 +1,4 @@
-import {
-  StyleSheet,
-  Image,
-  View,
-  FlatList,
-  Text,
-  ActivityIndicator,
-} from "react-native";
+import { StyleSheet, Image, FlatList, ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ThemedText } from "@/components/ThemedText";
 import { useThemeColors } from "@/hooks/useThemeColors";
@@ -13,26 +6,41 @@ import { Card } from "@/components/Card";
 import { ProductCard } from "@/components/product/ProductCard";
 import { useInfiniteFetchQuery } from "@/hooks/useFetchQuery";
 import { SearchBar } from "@/components/SearchBar";
-import { useState } from "react";
+import { SearchModeToggle } from "@/components/SearchModeToggle";
+import { useMemo, useState, useEffect } from "react";
 import { Row } from "@/components/Row";
+
+type SearchMode = "brand" | "category";
 
 export default function Index() {
   const colors = useThemeColors();
 
+  const [search, setSearch] = useState("");
+  const [searchMode, setSearchMode] = useState<SearchMode>("brand");
+
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(search), 500);
+    return () => clearTimeout(timer);
+  }, [search]);
+
+  const path = useMemo(() => {
+    if (!debouncedSearch) return "/search?countries_tags=en:france";
+    if (searchMode === "brand") return `/search?brands_tags=${debouncedSearch}`;
+    return `/search?categories_tags=${debouncedSearch}`;
+  }, [debouncedSearch, searchMode]);
+
   const { data, isFetchingNextPage, fetchNextPage, hasNextPage, isFetching } =
-    useInfiniteFetchQuery("/search?countries_tags=en:france", 20);
+    useInfiniteFetchQuery(path, 20);
 
   const PRODUCTS_LIST =
     data?.pages.flatMap((page) => page.products ?? []) ?? [];
 
   //filtre pour obtenir uniquement les produits avec un nom
-  const itemListRender = PRODUCTS_LIST.filter(
-    (item) => item?.abbreviated_product_name,
-  );
+  //const itemListRender = PRODUCTS_LIST.filter((item) => item?.coder);
+  const itemListRender = PRODUCTS_LIST;
 
   const isInitialLoading = isFetching && itemListRender.length === 0;
-
-  const [search, setSearch] = useState("");
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.tint }]}>
@@ -47,9 +55,9 @@ export default function Index() {
         </ThemedText>
       </Row>
       {/* search bar */}
-      <View>
+      <Row>
         <SearchBar value={search} onChange={setSearch} />
-      </View>
+      </Row>
       {/* body list des produits sous formes de card */}
       <Card style={styles.body}>
         <FlatList
@@ -99,10 +107,12 @@ const styles = StyleSheet.create({
     padding: 4,
   },
   header: {
-    padding: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
   },
   body: {
     flex: 1,
+    marginTop: 16,
   },
   gridGap: {
     gap: 8,
