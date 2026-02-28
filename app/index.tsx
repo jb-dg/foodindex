@@ -34,11 +34,29 @@ export default function Index() {
     useInfiniteFetchQuery(path, 20);
 
   const PRODUCTS_LIST =
-    data?.pages.flatMap((page) => page.products ?? []) ?? [];
+    data?.pages.flatMap(
+      (page) =>
+        page.products.map(
+          (r: {
+            abbreviated_product_name?: string;
+            code: string;
+            image_front_url?: string;
+          }) => ({
+            name: r.abbreviated_product_name,
+            id: r.code,
+            imagePath: r.image_front_url,
+          }),
+        ) ?? [],
+    ) ?? [];
 
   //filtre pour obtenir uniquement les produits avec un nom
-  //const itemListRender = PRODUCTS_LIST.filter((item) => item?.coder);
-  const itemListRender = PRODUCTS_LIST;
+  const itemListRender = PRODUCTS_LIST.filter((item) => item?.id);
+  // .sort(
+  //   (a, b) =>
+  //     (a.abbreviated_product_name ?? "").localeCompare(
+  //       b.abbreviated_product_name ?? "",
+  //     ),
+  // );
 
   const isInitialLoading = isFetching && itemListRender.length === 0;
 
@@ -65,12 +83,12 @@ export default function Index() {
           renderItem={({ item }) => (
             <ProductCard
               style={{ flex: 1 / 2 }}
-              id={item.code}
-              name={item.abbreviated_product_name}
-              imagePath={item.image_front_url}
+              id={item.id}
+              name={item.name}
+              imagePath={item.imagePath}
             ></ProductCard>
           )}
-          keyExtractor={(item) => item.code.toString()}
+          keyExtractor={(item) => item.id.toString()}
           numColumns={2}
           contentContainerStyle={[styles.gridGap, styles.list]}
           columnWrapperStyle={styles.gridGap}
